@@ -21,9 +21,6 @@ public class AppController {
         return "system";
     }
 
-    @GetMapping("/access-denied")
-    public String accessDenied(){
-        return "access-denied";
-    }
+
 
 }

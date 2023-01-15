@@ -11,4 +11,19 @@ public class AppController {
         return "home";
     }
 
+    @GetMapping("/moderator")
+    public String mode(){
+        return "mode";
+    }
+
+    @GetMapping("/system")
+    public String system(){
+        return "system";
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDenied(){
+        return "access-denied";
+    }
+
 }

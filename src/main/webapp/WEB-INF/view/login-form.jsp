@@ -24,7 +24,7 @@
     </style>
 </head>
 <body>
-<div >
+<div>
 
     <div id="loginbox" style="margin: 50px auto; width: 350px"
          class="mainbox col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-2">
@@ -93,6 +93,11 @@
                         </div>
                     </div>
 
+
+                    <%--MANUAL CSRF TOKEN! <form:form> give us this code automaticly--%>
+<%--                    <input type="hidden"--%>
+<%--                           name="${_csrf.parameterName}"--%>
+<%--                           value="${_csrf.token}">--%>
                 </form:form>
 
             </div>

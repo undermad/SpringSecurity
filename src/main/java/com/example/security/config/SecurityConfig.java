@@ -18,21 +18,21 @@ public class SecurityConfig {
     @Bean
     public InMemoryUserDetailsManager userDetailManager() {
         UserDetails dominik = User.builder()
-                .username("dominik")
-                .password("{noop}dominik")
-                .roles("REGULAR")
+                .username("user")
+                .password("{noop}user")
+                .roles("USER")
                 .build();
 
         UserDetails admin = User.builder()
                 .username("admin")
                 .password("{noop}admin")
-                .roles("ADMIN")
+                .roles("ADMIN", "MODERATOR", "USER")
                 .build();
 
         UserDetails moderator = User.builder()
-                .username("moderator")
-                .password("{noop}moderator")
-                .roles("MODERATOR")
+                .username("mod")
+                .password("{noop}mod")
+                .roles("MOD", "USER")
                 .build();
 
         return new InMemoryUserDetailsManager(admin, moderator, dominik);
@@ -42,16 +42,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
 
-        return httpSecurity.authorizeRequests(configurer -> configurer
-                        .anyRequest()
-                        .authenticated())
+        return httpSecurity
+                .authorizeRequests(configurer -> configurer
+                        .antMatchers("/").hasAnyRole("USER", "MOD", "ADMIN")
+                        .antMatchers("/moderator/**").hasAnyRole("MOD", "ADMIN")
+                        .antMatchers("/system/**").hasRole("ADMIN"))
 
                 .formLogin(configurer -> configurer
                         .loginPage("/loginForm")
                         .loginProcessingUrl("/authenticateTheUser")
                         .permitAll())
+
                 .logout(LogoutConfigurer::permitAll)
 
+                .exceptionHandling(configurer -> configurer
+                        .accessDeniedPage("/access-denied"))
 
                 .build();
 

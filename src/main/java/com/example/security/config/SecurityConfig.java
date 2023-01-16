@@ -1,41 +1,31 @@
 package com.example.security.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public InMemoryUserDetailsManager userDetailManager() {
-        UserDetails dominik = User.builder()
-                .username("user")
-                .password("{noop}user")
-                .roles("USER")
-                .build();
+    private final DataSource securityDataSource;
 
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("{noop}admin")
-                .roles("ADMIN", "MODERATOR", "USER")
-                .build();
+    @Autowired
+    public SecurityConfig(DataSource securityDataSource) {
+        this.securityDataSource = securityDataSource;
+    }
 
-        UserDetails moderator = User.builder()
-                .username("mod")
-                .password("{noop}mod")
-                .roles("MOD", "USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, moderator, dominik);
+    public UserDetailsManager userDetailsManager(){
+        return new JdbcUserDetailsManager(securityDataSource);
     }
 
     @Bean
@@ -44,8 +34,8 @@ public class SecurityConfig {
 
         return httpSecurity
                 .authorizeRequests(configurer -> configurer
-                        .antMatchers("/").hasAnyRole("USER", "MOD", "ADMIN")
-                        .antMatchers("/moderator/**").hasAnyRole("MOD", "ADMIN")
+                        .antMatchers("/").hasAnyRole("EMPLOYEE")
+                        .antMatchers("/moderator/**").hasAnyRole("MANAGER")
                         .antMatchers("/system/**").hasRole("ADMIN"))
 
                 .formLogin(configurer -> configurer

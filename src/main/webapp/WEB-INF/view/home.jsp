@@ -18,12 +18,17 @@
 <p>Hello Ectimel!</p>
 User: <security:authentication property="principal.username"/> <br/>
 Roles: <security:authentication property="principal.authorities"/>
-<p>
-    <a href="${pageContext.request.contextPath}/moderator">Moderator only</a>
-</p>
-<p>
-    <a href="${pageContext.request.contextPath}/system">Admin only</a>
-</p>
+
+<security:authorize access="hasRole('MOD')">
+    <p>
+        <a href="${pageContext.request.contextPath}/moderator">Moderator only</a>
+    </p>
+</security:authorize>
+<security:authorize access="hasRole('ADMIN')">
+    <p>
+        <a href="${pageContext.request.contextPath}/system">Admin only</a>
+    </p>
+</security:authorize>
 
 
 <form:form action="${pageContext.request.contextPath}/logout" method="POST">
